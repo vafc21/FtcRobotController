@@ -6,11 +6,13 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import com.qualcomm.robotcore.eventloop.opmode.TeleOp;
+import com.qualcomm.robotcore.hardware.HardwareMap;
 import com.qualcomm.robotcore.util.ElapsedTime;
 
 import org.firstinspires.ftc.teamcode.subsystems.Handoff;
 import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Outtake;
+import org.firstinspires.ftc.teamcode.subsystems.Vision;
 import org.firstinspires.ftc.teamcode.util.PIDController;
 
 @TeleOp(name="TeleOp_Main")
@@ -46,6 +48,7 @@ public class MainTeleOpMode extends LinearOpMode {
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Handoff handoff = new Handoff(hardwareMap);
+        Vision vision = new Vision(hardwareMap);
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -150,9 +153,13 @@ public class MainTeleOpMode extends LinearOpMode {
             //telemetry.addData("AngV", Drive.updatePoseEstimate().angVel);
             //telemetry.addData("OuttakeBottomMotor POS",outtake.OuttakeBottomMotor.getCurrentPosition());
             //telemetry.addData("OuttakeBottomMotor POS Con",outtake.OuttakeBottomMotor.getCurrentPosition()/28);
-            telemetry.addData("kp: ",kp);
-            telemetry.addData("OuttakeTopMotorRPM: ",outtake.getTopRPM());
-            telemetry.addData("OuttakeBottomMotorRPM: ",outtake.getBottomRPM());
+            //telemetry.addData("kp: ",kp);
+            //telemetry.addData("OuttakeTopMotorRPM: ",outtake.getTopRPM());
+            //telemetry.addData("OuttakeBottomMotorRPM: ",outtake.getBottomRPM());
+            telemetry.addData("Target X D", vision.getLatestTxDegreees());
+            telemetry.addData("Target Y D", vision.getLatestTyDegreees());
+            telemetry.addData("Target Area", vision.getLatestTa());
+            telemetry.addData("Target Id", vision.getLatestId());
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             //telemetry.addData("Outtake Power 0.0-1.0: ", outtake_pow);
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
