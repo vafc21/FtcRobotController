@@ -17,10 +17,10 @@ public class Vision {
     }
     public LLResult getResult(){
         LLResult result = limelight.getLatestResult();
-        if (result != null && result.isValid()){
-            return result;
+        if (result == null || !result.isValid()) {
+            return null;
         }
-        return null;
+        return result;
     }
     public int getLatestId(){
         if (getLatests()!=null){
