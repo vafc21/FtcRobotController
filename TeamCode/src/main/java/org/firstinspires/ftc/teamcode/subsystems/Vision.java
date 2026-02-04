@@ -23,38 +23,48 @@ public class Vision {
         return result;
     }
     public int getLatestId(){
-        if (getLatests()!=null){
-            return getLatest().getFiducialId();
+        LLResultTypes.FiducialResult latest = getLatest();
+        if (latest != null) {
+            return latest.getFiducialId();
         }
         return -1;
     }
     public LLResultTypes.FiducialResult getLatest(){
-        if (getLatests()!=null){
-            return getLatests().get(0);
+        List<LLResultTypes.FiducialResult> latests = getLatests();
+        if (latests != null && !latests.isEmpty()) {
+            return latests.get(0);
         }
         return null;
     }
     public List<LLResultTypes.FiducialResult> getLatests(){
-        if (getResult() != null && !getResult().getFiducialResults().isEmpty()) {
-            return getResult().getFiducialResults();
+        LLResult result = getResult();
+        if (result == null) {
+            return null;
+        }
+        List<LLResultTypes.FiducialResult> fiducials = result.getFiducialResults();
+        if (fiducials != null && !fiducials.isEmpty()) {
+            return fiducials;
         }
         return null;
     }
     public double getLatestTxDegreees(){
-        if (getLatest()!=null){
-            return getLatest().getTargetXDegrees();
+        LLResultTypes.FiducialResult latest = getLatest();
+        if (latest != null) {
+            return latest.getTargetXDegrees();
         }
         return -1;
     }
     public double getLatestTyDegreees(){
-        if (getLatest()!=null){
-            return getLatest().getTargetYDegrees();
+        LLResultTypes.FiducialResult latest = getLatest();
+        if (latest != null) {
+            return latest.getTargetYDegrees();
         }
         return -1;
     }
     public double getLatestTa(){
-        if (getLatest()!=null){
-            return getLatest().getTargetArea();
+        LLResultTypes.FiducialResult latest = getLatest();
+        if (latest != null) {
+            return latest.getTargetArea();
         }
         return -1;
     }
