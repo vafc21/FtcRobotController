@@ -17,13 +17,12 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 public class MainTeleOpMode extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private final double kp = -0.15;
+    private final double kp = -0.05;
     private PIDController PID = new PIDController(kp);
     //    private DcMotor FRMotor = null;
 //    private DcMotor FLMotor = null;
 //    private DcMotor BRMotor;
 //    private DcMotor BLMotor;
-
     private double outtake_pow=.65;
 
     private Pose2d StartPose = new Pose2d(0, 0, 0);
@@ -112,14 +111,18 @@ public class MainTeleOpMode extends LinearOpMode {
             //intake.takeInToggle(handoff.toggleReturn(gamepad1.a));
             if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad1.y){
                 if (gamepad1.right_bumper){
-                    double bottomDisPow = 1000;
-                    double topDisPow = 1000;
+                    double bottomDisPow = 950;
+                    double topDisPow = 700;
                     outtake.runTopMotor(PID.calculate(topDisPow,outtake.getTopRPM()));
                     outtake.runBottomMotor(PID.calculate(bottomDisPow,outtake.getBottomRPM()));
                     //outtake.long_outtake();
                     //outtake.runMotor(outtake_pow); //for testing
                 } else if (gamepad1.left_bumper) {
-                    outtake.short_outtake();
+                    double bottomDisPow = 1000;
+                    double topDisPow = 750;
+                    outtake.runTopMotor(PID.calculate(topDisPow,outtake.getTopRPM()));
+                    outtake.runBottomMotor(PID.calculate(bottomDisPow,outtake.getBottomRPM()));
+                    //outtake.short_outtake();
                 } else if (gamepad1.y){
                     outtake.intake();
                 }
