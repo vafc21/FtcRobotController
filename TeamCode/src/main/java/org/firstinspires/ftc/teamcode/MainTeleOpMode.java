@@ -19,8 +19,10 @@ import org.firstinspires.ftc.teamcode.util.PIDController;
 public class MainTeleOpMode extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private final double kp = -0.15;
-    private PIDController PID = new PIDController(kp);
+    private final double outtakekp = -0.15;
+    private final double rotatekp = 0.01;
+    private PIDController OuttakePID = new PIDController(outtakekp);
+    private PIDController RotatePID = new PIDController(rotatekp);
     //    private DcMotor FRMotor = null;
 //    private DcMotor FLMotor = null;
 //    private DcMotor BRMotor;
@@ -117,8 +119,9 @@ public class MainTeleOpMode extends LinearOpMode {
                 if (gamepad1.right_bumper){
                     double bottomDisPow = 1000;
                     double topDisPow = 1000;
-                    outtake.runTopMotor(PID.calculate(topDisPow,outtake.getTopRPM()));
-                    outtake.runBottomMotor(PID.calculate(bottomDisPow,outtake.getBottomRPM()));
+                    outtake.runTopMotor(OuttakePID.calculate(topDisPow,outtake.getTopRPM()));
+                    outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow,outtake.getBottomRPM()));
+                    rotate+=RotatePID.calculate(0,vision.getLatestTxDegreees());
                     //outtake.long_outtake();
                     //outtake.runMotor(outtake_pow); //for testing
                 } else if (gamepad1.left_bumper) {
