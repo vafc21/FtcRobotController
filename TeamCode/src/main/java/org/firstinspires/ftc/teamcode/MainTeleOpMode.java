@@ -22,6 +22,8 @@ public class MainTeleOpMode extends LinearOpMode {
     private final double outtakekp = -0.15;
     private final double rotatekp = 0.01;
     private final double strafekp = 0.02;
+    private final double rpmMin = 700;
+    private final double rpmMax = 1400;
     private PIDController OuttakePID = new PIDController(outtakekp);
     private PIDController RotatePID = new PIDController(rotatekp);
     private PIDController StrafePID = new PIDController(strafekp);
@@ -119,8 +121,9 @@ public class MainTeleOpMode extends LinearOpMode {
             //intake.takeInToggle(handoff.toggleReturn(gamepad1.a));
             if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad1.y){
                 if (gamepad1.right_bumper){
-                    double bottomDisPow = 1000;
-                    double topDisPow = 1000;
+                    double area = vision.getLatestTa();
+                    double bottomDisPow = mapAreaToRpm(area);
+                    double topDisPow = mapAreaToRpm(area);
                     outtake.runTopMotor(OuttakePID.calculate(topDisPow,outtake.getTopRPM()));
                     outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow,outtake.getBottomRPM()));
                     double tx = vision.getLatestTxDegreees();
@@ -176,5 +179,12 @@ public class MainTeleOpMode extends LinearOpMode {
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);
             telemetry.update();
         }
+    }
+
+    private double mapAreaToRpm(double area) {
+        if (area <= 0 || area == -1) {
+            return 1000;
+        }
+        return rpmMin + area * (rpmMax - rpmMin);
     }
 }
