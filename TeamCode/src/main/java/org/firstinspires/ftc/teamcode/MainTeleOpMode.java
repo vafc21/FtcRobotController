@@ -21,8 +21,10 @@ public class MainTeleOpMode extends LinearOpMode {
     private ElapsedTime runtime = new ElapsedTime();
     private final double outtakekp = -0.15;
     private final double rotatekp = 0.01;
+    private final double strafekp = 0.02;
     private PIDController OuttakePID = new PIDController(outtakekp);
     private PIDController RotatePID = new PIDController(rotatekp);
+    private PIDController StrafePID = new PIDController(strafekp);
     //    private DcMotor FRMotor = null;
 //    private DcMotor FLMotor = null;
 //    private DcMotor BRMotor;
@@ -121,7 +123,13 @@ public class MainTeleOpMode extends LinearOpMode {
                     double topDisPow = 1000;
                     outtake.runTopMotor(OuttakePID.calculate(topDisPow,outtake.getTopRPM()));
                     outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow,outtake.getBottomRPM()));
-                    rotate+=RotatePID.calculate(0,vision.getLatestTxDegreees());
+                    double tx = vision.getLatestTxDegreees();
+                    if (tx != -1) {
+                        // Auto-strafe and auto-rotate
+                        drive = 0;
+                        turn = StrafePID.calculate(0, tx);
+                        rotate += RotatePID.calculate(0, tx);
+                    }
                     //outtake.long_outtake();
                     //outtake.runMotor(outtake_pow); //for testing
                 } else if (gamepad1.left_bumper) {
