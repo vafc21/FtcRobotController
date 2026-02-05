@@ -87,19 +87,7 @@ public class MainTeleOpMode extends LinearOpMode {
             double drive  =  gamepad1.left_stick_y;
             double rotate = -gamepad1.right_stick_x * rotateSpeed;
 
-            //double delayMsec = 200;
-            // Tank Mode uses one stick to control each wheel.
-            // - This requires no math, but it is hard to drive forward slowly and keep straight.
-            // leftPower  = -gamepad1.left_stick_y ;
-            // rightPower = -gamepad1.right_stick_y ;
 
-            //intake.intake(gamepad1.a, gamepad1.left_bumper);
-            /*if (gamepad1.dpad_down){
-                intake.stopMotor();
-                handoff.stopMotors();
-            }*/
-//            handoff.handoff(gamepad1.x);
-//            handoff.store(gamepad1.a);
             if (gamepad1.a) {
                 handoff.store();
                 intake.intake();
@@ -107,20 +95,12 @@ public class MainTeleOpMode extends LinearOpMode {
                 handoff.handoff();
                 intake.outtake();
             } else {
-                handoff.stopMotors();
-                intake.stopMotor();
+                if (!gamepad1.right_bumper) {
+                    handoff.stopMotors();
+                    intake.stopMotor();
+                }
             }
 
-            //intake.intake(gamepad1.a,gamepad1.x);
-            // for testing!
-            /*double vd = runtime.milliseconds();
-            if (gamepad1.dpad_up && vd==runtime.milliseconds()) {
-                outtake_pow += .05;
-                vd+=delayMsec;
-            } else if (gamepad1.dpad_down && vd==runtime.milliseconds()) {
-                outtake_pow-=.05;
-                vd+=delayMsec;
-            }*/
 
             //intake.takeInToggle(handoff.toggleReturn(gamepad1.a));
             if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad1.y){
@@ -136,7 +116,11 @@ public class MainTeleOpMode extends LinearOpMode {
                         drive = 0;
                         turn = 0;
                         //turn = StrafePID.calculate(0, tx);
-                        rotate = RotatePID.calculate(0, tx);
+                        rotate = RotatePID.calculate(0, -tx);
+                    }
+                    if (outtake.getBottomRPM()!=0 && outtake.getTopRPM()!=0 && outtake.getBottomRPM()==bottomDisPow && outtake.getTopRPM()==topDisPow){
+                        handoff.handoff();
+                        intake.outtake();
                     }
                     //outtake.long_outtake();
                     //outtake.runMotor(outtake_pow); //for testing
