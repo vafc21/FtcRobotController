@@ -22,8 +22,12 @@ public class MainTeleOpMode extends LinearOpMode {
     private final double outtakekp = -0.15;
     private final double rotatekp = 0.01;
     private final double strafekp = 0.02;
-    private final double rpmMin = 700;
-    private final double rpmMax = 1400;
+    // Top RPM should less for backspin
+    private final double rpmMinTop = 1200;
+    private final double rpmMaxTop = 2000;
+    // Bottom RPM should more for backspin
+    private final double rpmMinBottom = 1550;
+    private final double rpmMaxBottom = 2100;
     private PIDController OuttakePID = new PIDController(outtakekp);
     private PIDController RotatePID = new PIDController(rotatekp);
     private PIDController StrafePID = new PIDController(strafekp);
@@ -122,15 +126,15 @@ public class MainTeleOpMode extends LinearOpMode {
             if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad1.y){
                 if (gamepad1.right_bumper){
                     double area = vision.getLatestTa();
-                    double bottomDisPow = mapAreaToRpm(area);
-                    double topDisPow = mapAreaToRpm(area);
+                    double bottomDisPow = mapAreaToRpmBottom(area);
+                    double topDisPow = mapAreaToRpmTop(area);
                     outtake.runTopMotor(OuttakePID.calculate(topDisPow,outtake.getTopRPM()));
                     outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow,outtake.getBottomRPM()));
                     double tx = vision.getLatestTxDegreees();
                     if (tx != -1) {
                         // Auto-strafe and auto-rotate
                         drive = 0;
-                        turn = StrafePID.calculate(0, tx);
+                        //turn = StrafePID.calculate(0, tx);
                         rotate += RotatePID.calculate(0, tx);
                     }
                     //outtake.long_outtake();
@@ -181,10 +185,18 @@ public class MainTeleOpMode extends LinearOpMode {
         }
     }
 
-    private double mapAreaToRpm(double area) {
-        if (area <= 0 || area == -1) {
+    private double mapAreaToRpmTop(double area) {
+        if (area <= 0) {
             return 1000;
         }
-        return rpmMin + area * (rpmMax - rpmMin);
+        return rpmMinTop + area * (rpmMaxTop - rpmMinTop);
     }
+    private double mapAreaToRpmBottom(double area) {
+        if (area <= 0) {
+            return 1000;
+        }
+        return rpmMinBottom + area * (rpmMaxBottom - rpmMinBottom);
+    }
+
+
 }

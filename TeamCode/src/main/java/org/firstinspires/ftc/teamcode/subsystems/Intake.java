@@ -23,6 +23,6 @@ public class Intake {
         runMotor(pow);
     }
     public void outtake(){
-        runMotor(-0.5);
+        runMotor(-.3);
     }
 }
