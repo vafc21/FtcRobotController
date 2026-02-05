@@ -87,7 +87,7 @@ public class MainTeleOpMode extends LinearOpMode {
             double drive  =  gamepad1.left_stick_y;
             double rotate = -gamepad1.right_stick_x * rotateSpeed;
 
-            double delayMsec = 200;
+            //double delayMsec = 200;
             // Tank Mode uses one stick to control each wheel.
             // - This requires no math, but it is hard to drive forward slowly and keep straight.
             // leftPower  = -gamepad1.left_stick_y ;
@@ -134,8 +134,9 @@ public class MainTeleOpMode extends LinearOpMode {
                     if (tx != -1) {
                         // Auto-strafe and auto-rotate
                         drive = 0;
+                        turn = 0;
                         //turn = StrafePID.calculate(0, tx);
-                        rotate += RotatePID.calculate(0, tx);
+                        rotate = RotatePID.calculate(0, tx);
                     }
                     //outtake.long_outtake();
                     //outtake.runMotor(outtake_pow); //for testing
