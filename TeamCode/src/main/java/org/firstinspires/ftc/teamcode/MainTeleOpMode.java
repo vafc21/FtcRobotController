@@ -20,14 +20,14 @@ public class MainTeleOpMode extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
     private final double outtakekp = -0.15;
-    private final double rotatekp = 0.01;
+    private final double rotatekp = 0.05;
     private final double strafekp = 0.02;
     // Top RPM should less for backspin
-    private final double rpmMinTop = 1200;
-    private final double rpmMaxTop = 2000;
+    private final double rpmMinTop = 1300;
+    private final double rpmMaxTop = 2200;
     // Bottom RPM should more for backspin
-    private final double rpmMinBottom = 1550;
-    private final double rpmMaxBottom = 2100;
+    private final double rpmMinBottom = 1650;
+    private final double rpmMaxBottom = 2500;
     private PIDController OuttakePID = new PIDController(outtakekp);
     private PIDController RotatePID = new PIDController(rotatekp);
     private PIDController StrafePID = new PIDController(strafekp);
@@ -118,14 +118,14 @@ public class MainTeleOpMode extends LinearOpMode {
                         //turn = StrafePID.calculate(0, tx);
                         rotate = RotatePID.calculate(0, -tx);
                     }
-                    if (outtake.getBottomRPM()!=0 && outtake.getTopRPM()!=0 && outtake.getBottomRPM()==bottomDisPow && outtake.getTopRPM()==topDisPow){
+                    /*if (outtake.getBottomRPM()!=0 && outtake.getTopRPM()!=0 && outtake.getBottomRPM()==bottomDisPow && outtake.getTopRPM()==topDisPow){
                         handoff.handoff();
                         intake.outtake();
-                    }
+                    }*/
                     //outtake.long_outtake();
                     //outtake.runMotor(outtake_pow); //for testing
                 } else if (gamepad1.left_bumper) {
-                    outtake.short_outtake();
+                    //outtake.short_outtake();
                 } else if (gamepad1.y){
                     outtake.intake();
                 }
@@ -157,8 +157,8 @@ public class MainTeleOpMode extends LinearOpMode {
             //telemetry.addData("OuttakeBottomMotor POS",outtake.OuttakeBottomMotor.getCurrentPosition());
             //telemetry.addData("OuttakeBottomMotor POS Con",outtake.OuttakeBottomMotor.getCurrentPosition()/28);
             //telemetry.addData("kp: ",kp);
-            //telemetry.addData("OuttakeTopMotorRPM: ",outtake.getTopRPM());
-            //telemetry.addData("OuttakeBottomMotorRPM: ",outtake.getBottomRPM());
+            telemetry.addData("OuttakeTopMotorRPM: ",outtake.getTopRPM());
+            telemetry.addData("OuttakeBottomMotorRPM: ",outtake.getBottomRPM());
             telemetry.addData("Target X D", vision.getLatestTxDegreees());
             telemetry.addData("Target Y D", vision.getLatestTyDegreees());
             telemetry.addData("Target Area", vision.getLatestTa());
