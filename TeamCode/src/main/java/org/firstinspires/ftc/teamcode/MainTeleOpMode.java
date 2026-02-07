@@ -23,10 +23,10 @@ public class MainTeleOpMode extends LinearOpMode {
     private final double rotatekp = 0.05;
     private final double strafekp = 0.02;
     // Top RPM should less for backspin
-    private final double rpmMinTop = 1300;
-    private final double rpmMaxTop = 2200;
+    private final double rpmMinTop = 1100;
+    private final double rpmMaxTop = 2500;
     // Bottom RPM should more for backspin
-    private final double rpmMinBottom = 1650;
+    private final double rpmMinBottom = 1850;
     private final double rpmMaxBottom = 2500;
     private PIDController OuttakePID = new PIDController(outtakekp);
     private PIDController RotatePID = new PIDController(rotatekp);
@@ -95,35 +95,41 @@ public class MainTeleOpMode extends LinearOpMode {
                 handoff.handoff();
                 intake.outtake();
             } else {
-                if (!gamepad1.right_bumper) {
+                //if (!gamepad1.right_bumper) {
                     handoff.stopMotors();
                     intake.stopMotor();
-                }
+                //}
             }
 
 
             //intake.takeInToggle(handoff.toggleReturn(gamepad1.a));
             if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad1.y){
-                if (gamepad1.right_bumper){
+                int id = vision.getLatestId();
+                if (gamepad1.right_bumper && (id==20 || id==24)){
                     double area = vision.getLatestTa();
-                    double bottomDisPow = mapAreaToRpmBottom(area);
-                    double topDisPow = mapAreaToRpmTop(area);
-                    outtake.runTopMotor(OuttakePID.calculate(topDisPow,outtake.getTopRPM()));
-                    outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow,outtake.getBottomRPM()));
-                    double tx = vision.getLatestTxDegreees();
-                    if (tx != -1) {
-                        // Auto-strafe and auto-rotate
-                        drive = 0;
-                        turn = 0;
-                        //turn = StrafePID.calculate(0, tx);
-                        rotate = RotatePID.calculate(0, -tx);
+                    if(area>0.0041) {
+                        double bottomDisPow = mapAreaToRpmBottom(area);
+                        double topDisPow = mapAreaToRpmTop(area);
+                        outtake.runTopMotor(OuttakePID.calculate(topDisPow, outtake.getTopRPM()));
+                        outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow, outtake.getBottomRPM()));
+                    } else {
+                        double bottomDisPow = 2000;
+                        double topDisPow = 1100;
+                        outtake.runTopMotor(OuttakePID.calculate(topDisPow, outtake.getTopRPM()));
+                        outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow, outtake.getBottomRPM()));
                     }
-                    /*if (outtake.getBottomRPM()!=0 && outtake.getTopRPM()!=0 && outtake.getBottomRPM()==bottomDisPow && outtake.getTopRPM()==topDisPow){
-                        handoff.handoff();
-                        intake.outtake();
-                    }*/
-                    //outtake.long_outtake();
-                    //outtake.runMotor(outtake_pow); //for testing
+                        double tx = vision.getLatestTxDegreees();
+                        if (tx != -1) {
+                            // Auto-strafe and auto-rotate
+                            drive = 0;
+                            turn = 0;
+                            //turn = StrafePID.calculate(0, tx);
+                            rotate = RotatePID.calculate(0, -tx);
+                        }
+                        /*if (outtake.getBottomRPM()!=0 && outtake.getTopRPM()!=0 && outtake.getBottomRPM()==bottomDisPow && outtake.getTopRPM()==topDisPow){
+                            handoff.handoff();
+                            intake.outtake();
+                        }*/
                 } else if (gamepad1.left_bumper) {
                     //outtake.short_outtake();
                 } else if (gamepad1.y){
