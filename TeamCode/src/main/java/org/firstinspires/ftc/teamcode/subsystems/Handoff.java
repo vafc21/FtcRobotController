@@ -2,6 +2,13 @@ package org.firstinspires.ftc.teamcode.subsystems;
 
 import static com.qualcomm.robotcore.hardware.DcMotorSimple.Direction.REVERSE;
 
+import android.app.Notification;
+
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
@@ -41,6 +48,36 @@ public class Handoff {
 
     public void handoff(){
         runMotor(-pow,1);
+    }
+    public class StoreAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            store();
+            return false;
+        }
+    }
+    public class HandoffAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            handoff();
+            return false;
+        }
+    }
+    public class StopAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            stopMotors();
+            return false;
+        }
+    }
+    public Action storeAction(){
+        return new StoreAction();
+    }
+    public Action handoffAction(){
+        return new HandoffAction();
+    }
+    public Action stopAction(){
+        return new StopAction();
     }
 
 

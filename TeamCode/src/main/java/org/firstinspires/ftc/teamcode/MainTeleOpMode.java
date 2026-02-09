@@ -85,7 +85,7 @@ public class MainTeleOpMode extends LinearOpMode {
             double rotateSpeed = 0.65;
             double turn = gamepad1.left_stick_x;
             double drive  =  gamepad1.left_stick_y;
-            double rotate = -gamepad1.right_stick_x * rotateSpeed;
+            double rotate = gamepad1.right_stick_x * rotateSpeed;
 
 
             if (gamepad1.a) {
@@ -124,7 +124,7 @@ public class MainTeleOpMode extends LinearOpMode {
                             drive = 0;
                             turn = 0;
                             //turn = StrafePID.calculate(0, tx);
-                            rotate = RotatePID.calculate(0, -tx);
+                            rotate = RotatePID.calculate(0, tx);
                         }
                         /*if (outtake.getBottomRPM()!=0 && outtake.getTopRPM()!=0 && outtake.getBottomRPM()==bottomDisPow && outtake.getTopRPM()==topDisPow){
                             handoff.handoff();

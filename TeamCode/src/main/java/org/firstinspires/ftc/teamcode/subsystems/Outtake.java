@@ -1,5 +1,10 @@
 package org.firstinspires.ftc.teamcode.subsystems;
 
+import androidx.annotation.NonNull;
+
+import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
+import com.acmerobotics.roadrunner.Action;
+import com.acmerobotics.roadrunner.InstantAction;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorEx;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -33,28 +38,62 @@ public class Outtake {
     public void stopMotors(){
         runMotor(0,0);
     }
-    /*public double getBottomRPM(){
-        //does not work
-        return (OuttakeBottomMotor.getVelocity()/28)*60;
-    }
-    public double getTopRPM(){
-        //does not work
-        return (OuttakeTopMotor.getVelocity()/28)*60;
-    }*/
-    public void short_outtake(){
-        runMotor(short_pow);
-    }
-    public void long_outtake(){
-        runMotor(long_pow);
-    }
     public void intake(){
         runMotor(-1);
     }
     public double getTopRPM(){
         return Math.abs((OuttakeTopMotor.getVelocity()/TICKS_PER_REV) * 60);
     }
-    public double getBottomRPM(){
-        return Math.abs((OuttakeBottomMotor.getVelocity()/TICKS_PER_REV) * 60);
+    public double getBottomRPM() {
+        return Math.abs((OuttakeBottomMotor.getVelocity() / TICKS_PER_REV) * 60);
+    }
+    public class IntakeAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            intake();
+            return false;
+        }
+    }
+    public class OuttakeTopAction implements Action {
+        double power;
+        private OuttakeTopAction(double power){
+            this.power = power;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            runTopMotor(power);
+            return false;
+        }
+    }
+    public class OuttakeBottomAction implements Action {
+        double power;
+        private OuttakeBottomAction(double power){
+            this.power = power;
+        }
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            runBottomMotor(power);
+            return false;
+        }
+    }
+    public class StopAction implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            stopMotors();
+            return false;
+        }
+    }
+    public Action intakeAction(){
+        return new IntakeAction();
+    }
+    public Action outtakeTopAction(double power){
+        return new OuttakeTopAction(power);
+    }
+    public Action outtakeBottomAction(double power){
+        return new OuttakeBottomAction(power);
+    }
+    public Action stopAction(){
+        return new StopAction();
     }
 
 }
