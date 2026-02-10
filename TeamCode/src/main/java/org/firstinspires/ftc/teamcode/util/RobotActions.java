@@ -46,9 +46,8 @@ public class RobotActions {
                 }
             }
             if (topDisPow<robot.outtake.getTopRPM()){
-                double timeMs = robot.runtime.milliseconds();
                 double doneTimeMs = robot.runtime.milliseconds()+3000;
-                while (timeMs<doneTimeMs){
+                while (robot.runtime.milliseconds()<doneTimeMs){
                     robot.handoff.handoff();
                 }
                 robot.handoff.stopMotors();
