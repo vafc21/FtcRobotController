@@ -6,12 +6,6 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
-
-/**
- * Action factory / composition layer.
- *
- * Use small methods that return Action objects instead of making a new Action class for every button.
- */
 public class RobotActions {
     private final Robot robot;
 
@@ -23,42 +17,62 @@ public class RobotActions {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             double area = robot.vision.getLatestTa();
-            double bottomDisPow;
-            double topDisPow;
-            if(area>0.0041) {
-                bottomDisPow = mapAreaToRpmBottom(area);
-                topDisPow = mapAreaToRpmTop(area);
-                robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
-                robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
-            } else {
-                bottomDisPow = 2000;
-                topDisPow = 1100;
-                robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
-                robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
-            }
-            double tx = robot.vision.getLatestTxDegreees();
-            while (true){
-                if (tx == -1){
-                    break;
-                } else if (tx<-2 || tx>2) {
-                    double rotateV = robot.RotatePID.calculate(0, tx);
-                    robot.drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0,0),rotateV));
+            double bottomDisPow=0;
+            double topDisPow=0;
+            if (area!=-1){
+                if(area>0.0041) {
+                    bottomDisPow = mapAreaToRpmBottom(area);
+                    topDisPow = mapAreaToRpmTop(area);
+                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
+                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
+                } else {
+                    bottomDisPow = 1500;
+                    topDisPow = 1100;
+                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
+                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
                 }
             }
-            if (topDisPow<robot.outtake.getTopRPM()){
-                double doneTimeMs = robot.runtime.milliseconds()+3000;
+            if (topDisPow!=0 && bottomDisPow!=0 && topDisPow<robot.outtake.getTopRPM() && bottomDisPow<robot.outtake.getBottomRPM()){
+                double doneTimeMs = robot.runtime.milliseconds()+5000;
+                double allDoneTime = doneTimeMs+4000;
+                robot.outtake.runBottomMotor(0.5);
+                robot.outtake.runTopMotor(0.);
                 while (robot.runtime.milliseconds()<doneTimeMs){
                     robot.handoff.handoff();
                 }
                 robot.handoff.stopMotors();
+                while (allDoneTime<robot.runtime.milliseconds()){
+                    ;
+                }
+                robot.outtake.stopMotors();
                 return false;
             }
             return true;
 
         }
     }
+    public class AutoPos implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            double tx = robot.vision.getLatestTxDegreees();
+            double rotateV;
+            int id = robot.vision.getLatestId();
+            if ((id==20 || id==24) && ((tx>-200 && tx<-10) || (tx<200 && tx>10))) {
+                rotateV = robot.RotatePID.calculate(0, tx);
+                robot.drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), rotateV));
+                return true;
+            } else {
+                rotateV = 0;
+                robot.drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), rotateV));
+                return false;
+            }
+        }
+    }
     public Action shoot() {
         return new Shoot();
+    }
+    public Action autoPos() {
+        return new AutoPos();
     }
     private double mapAreaToRpmTop(double area) {
         if (area <= 0) {

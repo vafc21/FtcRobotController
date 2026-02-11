@@ -17,7 +17,7 @@ public class Robot {
     public final Handoff handoff;
     public final Vision vision;
     public ElapsedTime runtime = new ElapsedTime();
-    private final double outtakekp = -0.15;
+    private final double outtakekp = -0.01;
     private final double rotatekp = 0.01;
     private final double strafekp = 0.02;
     // Top RPM should less for backspin

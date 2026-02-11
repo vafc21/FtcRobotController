@@ -28,7 +28,8 @@ public class AutoTest extends LinearOpMode {
         Actions.runBlocking(
                 robot.drive.actionBuilder(startPose)
                         .lineToX(5)
-                        .turn(10)
+                        .turn(20*((Math.PI)/180))
+                        .stopAndAdd(actions.autoPos())
                         .stopAndAdd(actions.shoot())
                         .build()
         );
