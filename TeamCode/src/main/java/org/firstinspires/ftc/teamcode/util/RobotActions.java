@@ -23,25 +23,25 @@ public class RobotActions {
                 if(area>0.0041) {
                     bottomDisPow = mapAreaToRpmBottom(area);
                     topDisPow = mapAreaToRpmTop(area);
-                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
-                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
+                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
+                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 } else {
                     bottomDisPow = 1500;
                     topDisPow = 1100;
-                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
-                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
+                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
+                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 }
             }
             if (topDisPow!=0 && bottomDisPow!=0 && topDisPow<robot.outtake.getTopRPM() && bottomDisPow<robot.outtake.getBottomRPM()){
                 double doneTimeMs = robot.runtime.milliseconds()+5000;
                 double allDoneTime = doneTimeMs+4000;
-                robot.outtake.runBottomMotor(0.5);
-                robot.outtake.runTopMotor(0.);
+                //robot.outtake.runBottomMotor(0.5);
+                //robot.outtake.runTopMotor(0.);
                 while (robot.runtime.milliseconds()<doneTimeMs){
                     robot.handoff.handoff();
                 }
                 robot.handoff.stopMotors();
-                while (allDoneTime<robot.runtime.milliseconds()){
+                while (allDoneTime>robot.runtime.milliseconds()){
                     ;
                 }
                 robot.outtake.stopMotors();
