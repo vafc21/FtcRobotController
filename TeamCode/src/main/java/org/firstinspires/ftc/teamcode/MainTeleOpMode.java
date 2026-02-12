@@ -169,6 +169,7 @@ public class MainTeleOpMode extends LinearOpMode {
             telemetry.addData("Target Y D", vision.getLatestTyDegreees());
             telemetry.addData("Target Area", vision.getLatestTa());
             telemetry.addData("Target Id", vision.getLatestId());
+            //telemetry.addData("Target Team", vision.getLatestTeam().getFiducialId());
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             //telemetry.addData("Outtake Power 0.0-1.0: ", outtake_pow);
             //telemetry.addData("Motors", "left (%.2f), right (%.2f)", leftPower, rightPower);

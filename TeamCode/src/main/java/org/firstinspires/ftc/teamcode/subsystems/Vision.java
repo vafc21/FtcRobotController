@@ -29,6 +29,20 @@ public class Vision {
         }
         return -1;
     }
+    public LLResultTypes.FiducialResult getLatestTeam(){
+        List<LLResultTypes.FiducialResult> latests = getLatests();
+        if (latests != null){
+            for (int i=0;i<latests.size();i++){
+                if (latests.get(i) != null){
+                    int id = latests.get(i).getFiducialId();
+                    if (id==20 || id==24) {
+                        return latests.get(i);
+                    }
+                }
+            }
+        }
+        return null;
+    }
     public LLResultTypes.FiducialResult getLatest(){
         List<LLResultTypes.FiducialResult> latests = getLatests();
         if (latests != null && !latests.isEmpty()) {

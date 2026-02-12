@@ -56,8 +56,8 @@ public class RobotActions {
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             double tx = robot.vision.getLatestTxDegreees();
             double rotateV;
-            int id = robot.vision.getLatestId();
-            if ((id==20 || id==24) && ((tx>-200 && tx<-10) || (tx<200 && tx>10))) {
+            //int id = robot.vision.getLatestTeam().getFiducialId();
+            if (((tx>-200 && tx<-10) || (tx<200 && tx>10))) {
                 rotateV = robot.RotatePID.calculate(0, tx);
                 robot.drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), rotateV));
                 return true;
