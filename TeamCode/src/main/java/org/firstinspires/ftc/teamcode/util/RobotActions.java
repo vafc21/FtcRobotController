@@ -8,9 +8,14 @@ import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
 public class RobotActions {
     private final Robot robot;
+    private boolean readyToShoot;
+    private boolean stopAuto;
+    private Double handoffStartMs = null;
 
     public RobotActions(Robot robot) {
         this.robot = robot;
+        this.readyToShoot = false;
+        this.stopAuto = false;
     }
     public class Shoot implements Action {
 
@@ -26,25 +31,17 @@ public class RobotActions {
                     robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
                     robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 } else {
-                    bottomDisPow = 1500;
+                    bottomDisPow = 2050;
                     topDisPow = 1100;
                     robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
                     robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 }
             }
             if (topDisPow!=0 && bottomDisPow!=0 && topDisPow<robot.outtake.getTopRPM() && bottomDisPow<robot.outtake.getBottomRPM()){
-                double doneTimeMs = robot.runtime.milliseconds()+5000;
-                double allDoneTime = doneTimeMs+4000;
-                //robot.outtake.runBottomMotor(0.5);
-                //robot.outtake.runTopMotor(0.);
-                while (robot.runtime.milliseconds()<doneTimeMs){
-                    robot.handoff.handoff();
-                }
-                robot.handoff.stopMotors();
-                while (allDoneTime>robot.runtime.milliseconds()){
-                    ;
-                }
-                robot.outtake.stopMotors();
+                readyToShoot = true;
+                //return false;
+            }
+            if (stopAuto){
                 return false;
             }
             return true;
@@ -68,11 +65,33 @@ public class RobotActions {
             }
         }
     }
+    public class Handoff implements Action {
+
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (!readyToShoot) return true;
+            if (handoffStartMs == null) {
+                handoffStartMs = robot.runtime.milliseconds();
+                robot.handoff.handoff();
+            }
+            if (robot.runtime.milliseconds() - handoffStartMs >= 4000) {
+                robot.handoff.stopMotors();
+                readyToShoot = false;
+                stopAuto = true;
+                handoffStartMs = null;
+                return false;
+            }
+            return true;
+        }
+    }
     public Action shoot() {
         return new Shoot();
     }
     public Action autoPos() {
         return new AutoPos();
+    }
+    public Action handoff(){
+        return new Handoff();
     }
     private double mapAreaToRpmTop(double area) {
         if (area <= 0) {

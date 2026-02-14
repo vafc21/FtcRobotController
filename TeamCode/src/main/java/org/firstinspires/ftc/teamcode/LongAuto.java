@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
 import com.acmerobotics.roadrunner.ftc.Actions;
 import com.qualcomm.robotcore.eventloop.opmode.Autonomous;
@@ -21,10 +22,16 @@ public class LongAuto extends LinearOpMode {
         Actions.runBlocking(
                 robot.drive.actionBuilder(startPose)
                         .lineToX(5)
-                        //.turn(20*((Math.PI)/180))
-                        .stopAndAdd(actions.autoPos())
-                        .stopAndAdd(actions.shoot())
+                        .turn(20*((Math.PI)/180))
+                        //.stopAndAdd(actions.autoPos())
+                        //.stopAndAdd(actions.shoot())
                         .build()
+        );
+        Actions.runBlocking( new ParallelAction(
+                actions.autoPos(),
+                actions.shoot(),
+                actions.handoff()
+                )
         );
     }
 }
