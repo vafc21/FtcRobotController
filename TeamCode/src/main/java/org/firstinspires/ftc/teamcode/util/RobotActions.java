@@ -34,7 +34,7 @@ public class RobotActions {
                     robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 } else {
                     bottomDisPow = 2050;
-                    topDisPow = 1100;
+                    topDisPow = 1050;
                     robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
                     robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 }
@@ -86,7 +86,7 @@ public class RobotActions {
             return true;
         }
     }
-    public class Leave implements Action {
+    public class ShortLeave implements Action {
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
             LLResultTypes.FiducialResult team = robot.vision.getLatestTeam();
@@ -115,8 +115,8 @@ public class RobotActions {
     public Action handoff(){
         return new Handoff();
     }
-    public Action leave(){
-        return new Leave();
+    public Action shortLeave(){
+        return new ShortLeave();
     }
     private double mapAreaToRpmTop(double area) {
         if (area <= 0) {

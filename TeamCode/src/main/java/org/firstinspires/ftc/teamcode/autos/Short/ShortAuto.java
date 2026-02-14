@@ -1,4 +1,4 @@
-package org.firstinspires.ftc.teamcode;
+package org.firstinspires.ftc.teamcode.autos.Short;
 
 import com.acmerobotics.roadrunner.ParallelAction;
 import com.acmerobotics.roadrunner.Pose2d;
@@ -9,7 +9,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.util.Robot;
 import org.firstinspires.ftc.teamcode.util.RobotActions;
 
-@Autonomous(name = "org.firstinspires.ftc.teamcode.ShortAuto")
+@Autonomous(name = "ShortAuto")
 public class ShortAuto extends LinearOpMode {
     private Robot robot;
     private RobotActions actions;
@@ -32,7 +32,7 @@ public class ShortAuto extends LinearOpMode {
         );
         Actions.runBlocking(
                 robot.drive.actionBuilder(startPose)
-                        .stopAndAdd(actions.leave())
+                        .stopAndAdd(actions.shortLeave())
                         .build()
         );
     }
