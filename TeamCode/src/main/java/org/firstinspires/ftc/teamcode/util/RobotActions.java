@@ -6,6 +6,8 @@ import com.acmerobotics.dashboard.telemetry.TelemetryPacket;
 import com.acmerobotics.roadrunner.Action;
 import com.acmerobotics.roadrunner.PoseVelocity2d;
 import com.acmerobotics.roadrunner.Vector2d;
+import com.qualcomm.hardware.limelightvision.LLResultTypes;
+
 public class RobotActions {
     private final Robot robot;
     private boolean readyToShoot;
@@ -84,6 +86,26 @@ public class RobotActions {
             return true;
         }
     }
+    public class Leave implements Action {
+        @Override
+        public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            LLResultTypes.FiducialResult team = robot.vision.getLatestTeam();
+            if(team!=null){
+                int id=team.getFiducialId();
+                double timer = robot.runtime.milliseconds()+1000;
+                if(id==20){
+                    robot.drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 1), 0));
+                } else if (id==24) {
+                    robot.drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, -1), 0));
+                }
+                if (robot.runtime.milliseconds()<=timer){
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+    }
     public Action shoot() {
         return new Shoot();
     }
@@ -92,6 +114,9 @@ public class RobotActions {
     }
     public Action handoff(){
         return new Handoff();
+    }
+    public Action leave(){
+        return new Leave();
     }
     private double mapAreaToRpmTop(double area) {
         if (area <= 0) {

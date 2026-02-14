@@ -30,5 +30,10 @@ public class ShortAuto extends LinearOpMode {
                 actions.handoff()
                 )
         );
+        Actions.runBlocking(
+                robot.drive.actionBuilder(startPose)
+                        .stopAndAdd(actions.leave())
+                        .build()
+        );
     }
 }
