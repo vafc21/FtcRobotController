@@ -16,6 +16,7 @@ public class RobotActions {
 
     public RobotActions(Robot robot) {
         this.robot = robot;
+        robot.OuttakePID.setkP(-robot.outtakekp);
         this.readyToShoot = false;
         this.stopAuto = false;
     }
@@ -56,7 +57,8 @@ public class RobotActions {
             double tx = robot.vision.getLatestTxDegreees();
             double rotateV;
             //int id = robot.vision.getLatestTeam().getFiducialId();
-            if (((tx>-200 && tx<-10) || (tx<200 && tx>10))) {
+            double precision = 5;
+            if (((tx>-200 && tx<-precision) || (tx<200 && tx>precision))) {
                 rotateV = robot.RotatePID.calculate(0, tx);
                 robot.drive.setDrivePowers(new PoseVelocity2d(new Vector2d(0, 0), rotateV));
                 return true;
@@ -71,18 +73,19 @@ public class RobotActions {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
-            if (!readyToShoot) return true;
+            if (!readyToShoot) {
+                return true;
+            }
             if (handoffStartMs == null) {
                 handoffStartMs = robot.runtime.milliseconds();
                 robot.handoff.handoff();
-            }
-            if (robot.runtime.milliseconds() - handoffStartMs >= 4000) {
+            } else if (robot.runtime.milliseconds() - handoffStartMs >= 4000) {
                 robot.handoff.stopMotors();
-                readyToShoot = false;
                 stopAuto = true;
                 handoffStartMs = null;
                 return false;
             }
+            //readyToShoot = false;
             return true;
         }
     }

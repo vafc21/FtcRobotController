@@ -14,51 +14,28 @@ import org.firstinspires.ftc.teamcode.subsystems.Intake;
 import org.firstinspires.ftc.teamcode.subsystems.Outtake;
 import org.firstinspires.ftc.teamcode.subsystems.Vision;
 import org.firstinspires.ftc.teamcode.util.PIDController;
+import org.firstinspires.ftc.teamcode.util.Robot;
 
 @TeleOp(name="TeleOp_Main")
 public class MainTeleOpMode extends LinearOpMode {
     // Declare OpMode members.
     private ElapsedTime runtime = new ElapsedTime();
-    private final double outtakekp = -0.15;
-    private final double rotatekp = 0.05;
-    private final double strafekp = 0.02;
-    // Top RPM should less for backspin
-    private final double rpmMinTop = 1100;
-    private final double rpmMaxTop = 2500;
-    // Bottom RPM should more for backspin
-    private final double rpmMinBottom = 1850;
-    private final double rpmMaxBottom = 2500;
-    private PIDController OuttakePID = new PIDController(outtakekp);
-    private PIDController RotatePID = new PIDController(rotatekp);
-    private PIDController StrafePID = new PIDController(strafekp);
-    //    private DcMotor FRMotor = null;
-//    private DcMotor FLMotor = null;
-//    private DcMotor BRMotor;
-//    private DcMotor BLMotor;
-
-    private double outtake_pow=.65;
-
     private Pose2d StartPose = new Pose2d(0, 0, 0);
-
+    private Robot robot;
 
     @Override
     public void runOpMode() {
         telemetry.addData("Status", "Initialized");
         telemetry.update();
 
-        // Initialize the hardware variables. Note that the strings used here as parameters
-        // to 'get' must correspond to the names assigned during the robot configuration
-        // step (using the FTC Robot Controller app on the phone).
-//        FRMotor  = hardwareMap.get(DcMotor.class, "FrontRightMotor");
-//        FLMotor = hardwareMap.get(DcMotor.class, "FrontLeftMotor");
-//        BLMotor = hardwareMap.get(DcMotor.class, "BackLeftMotor");
-//        BRMotor = hardwareMap.get(DcMotor.class, "BackRightMotor");.
-        //Intake = hardwareMap.get(CRServo.class, "Intake");
+        robot = new Robot(hardwareMap,StartPose);
+        /*
         MecanumDrive Drive = new MecanumDrive(hardwareMap, StartPose);
         Intake intake = new Intake(hardwareMap);
         Outtake outtake = new Outtake(hardwareMap);
         Handoff handoff = new Handoff(hardwareMap);
         Vision vision = new Vision(hardwareMap);
+         */
         // To drive forward, most robots need the motor on one side to be reversed, because the axles point in opposite directions.
         // Pushing the left stick forward MUST make robot go forward. So adjust these two lines based on your first test drive.
         // Note: The settings here assume direct drive on left and right wheels.  Gear Reduction or 90 Deg drives may require direction flips
@@ -68,7 +45,7 @@ public class MainTeleOpMode extends LinearOpMode {
         waitForStart();
         runtime.reset();
 
-        intake.stopMotor();
+        robot.intake.stopMotor();
 
         // run until the end of the match (driver presses STOP)
         while (opModeIsActive()) {
@@ -82,49 +59,49 @@ public class MainTeleOpMode extends LinearOpMode {
             // POV Mode uses left stick to go forward, and right stick to turn.
             // - This uses basic math to combine motions and is easier to drive straight.
 //            double rotateSpeed = 0.8;
-            double rotateSpeed = 0.65;
+            double rotateSpeed = 0.75;
             double turn = gamepad1.left_stick_x;
             double drive  =  gamepad1.left_stick_y;
             double rotate = gamepad1.right_stick_x * rotateSpeed;
 
 
             if (gamepad1.a) {
-                handoff.store();
-                intake.intake();
+                robot.handoff.store();
+                robot.intake.intake();
             } else if (gamepad1.x) {
-                handoff.handoff();
-                intake.outtake();
+                robot.handoff.handoff();
+                robot.intake.outtake();
             } else {
                 //if (!gamepad1.right_bumper) {
-                    handoff.stopMotors();
-                    intake.stopMotor();
+                robot.handoff.stopMotors();
+                robot.intake.stopMotor();
                 //}
             }
 
 
             //intake.takeInToggle(handoff.toggleReturn(gamepad1.a));
             if (gamepad1.right_bumper || gamepad1.left_bumper || gamepad1.y){
-                int id = vision.getLatestId();
+                int id = robot.vision.getLatestId();
                 if (gamepad1.right_bumper && (id==20 || id==24)){
-                    double area = vision.getLatestTa();
+                    double area = robot.vision.getLatestTa();
                     if(area>0.0041) {
                         double bottomDisPow = mapAreaToRpmBottom(area);
                         double topDisPow = mapAreaToRpmTop(area);
-                        outtake.runTopMotor(OuttakePID.calculate(topDisPow, outtake.getTopRPM()));
-                        outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow, outtake.getBottomRPM()));
+                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
+                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
                     } else {
                         double bottomDisPow = 2000;
                         double topDisPow = 1100;
-                        outtake.runTopMotor(OuttakePID.calculate(topDisPow, outtake.getTopRPM()));
-                        outtake.runBottomMotor(OuttakePID.calculate(bottomDisPow, outtake.getBottomRPM()));
+                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
+                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
                     }
-                        double tx = vision.getLatestTxDegreees();
+                        double tx = robot.vision.getLatestTxDegreees();
                         if (tx != -1) {
                             // Auto-strafe and auto-rotate
                             drive = 0;
                             turn = 0;
                             //turn = StrafePID.calculate(0, tx);
-                            rotate = RotatePID.calculate(0, tx);
+                            rotate = robot.RotatePID.calculate(0, tx);
                         }
                         /*if (outtake.getBottomRPM()!=0 && outtake.getTopRPM()!=0 && outtake.getBottomRPM()==bottomDisPow && outtake.getTopRPM()==topDisPow){
                             handoff.handoff();
@@ -133,10 +110,10 @@ public class MainTeleOpMode extends LinearOpMode {
                 } else if (gamepad1.left_bumper) {
                     //outtake.short_outtake();
                 } else if (gamepad1.y){
-                    outtake.intake();
+                    robot.outtake.intake();
                 }
             } else {
-                outtake.stopMotors();
+                robot.outtake.stopMotors();
             }
 
 
@@ -153,7 +130,7 @@ public class MainTeleOpMode extends LinearOpMode {
 
             PoseVelocity2d velocity = new PoseVelocity2d(translationalVelocity, rotationalVelocity);
 
-            Drive.setDrivePowers(velocity);
+            robot.drive.setDrivePowers(velocity);
 
 
             // Show the elapsed game time and wheel power.
@@ -163,12 +140,12 @@ public class MainTeleOpMode extends LinearOpMode {
             //telemetry.addData("OuttakeBottomMotor POS",outtake.OuttakeBottomMotor.getCurrentPosition());
             //telemetry.addData("OuttakeBottomMotor POS Con",outtake.OuttakeBottomMotor.getCurrentPosition()/28);
             //telemetry.addData("kp: ",kp);
-            telemetry.addData("OuttakeTopMotorRPM: ",outtake.getTopRPM());
-            telemetry.addData("OuttakeBottomMotorRPM: ",outtake.getBottomRPM());
-            telemetry.addData("Target X D", vision.getLatestTxDegreees());
-            telemetry.addData("Target Y D", vision.getLatestTyDegreees());
-            telemetry.addData("Target Area", vision.getLatestTa());
-            telemetry.addData("Target Id", vision.getLatestId());
+            telemetry.addData("OuttakeTopMotorRPM: ",robot.outtake.getTopRPM());
+            telemetry.addData("OuttakeBottomMotorRPM: ",robot.outtake.getBottomRPM());
+            telemetry.addData("Target X D", robot.vision.getLatestTxDegreees());
+            telemetry.addData("Target Y D", robot.vision.getLatestTyDegreees());
+            telemetry.addData("Target Area", robot.vision.getLatestTa());
+            telemetry.addData("Target Id", robot.vision.getLatestId());
             //telemetry.addData("Target Team", vision.getLatestTeam().getFiducialId());
             telemetry.addData("Status", "Run Time: " + runtime.toString());
             //telemetry.addData("Outtake Power 0.0-1.0: ", outtake_pow);
@@ -181,13 +158,13 @@ public class MainTeleOpMode extends LinearOpMode {
         if (area <= 0) {
             return 1000;
         }
-        return rpmMinTop + area * (rpmMaxTop - rpmMinTop);
+        return robot.rpmMinTop + area * (robot.rpmMaxTop - robot.rpmMinTop);
     }
     private double mapAreaToRpmBottom(double area) {
         if (area <= 0) {
             return 1000;
         }
-        return rpmMinBottom + area * (rpmMaxBottom - rpmMinBottom);
+        return robot.rpmMinBottom + area * (robot.rpmMaxBottom - robot.rpmMinBottom);
     }
 
 

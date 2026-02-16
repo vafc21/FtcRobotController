@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.util.Robot;
 import org.firstinspires.ftc.teamcode.util.RobotActions;
 
-@Autonomous(name = "ShootAndStrafeLongLeave")
+@Autonomous(name = "LONGShootAndStrafeLeave")
 public class ShootAndStrafeLeave extends LinearOpMode  {
     private Robot robot;
     private RobotActions actions;

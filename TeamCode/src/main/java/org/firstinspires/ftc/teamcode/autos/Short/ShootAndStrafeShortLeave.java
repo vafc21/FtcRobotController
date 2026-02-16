@@ -10,7 +10,7 @@ import com.qualcomm.robotcore.eventloop.opmode.LinearOpMode;
 import org.firstinspires.ftc.teamcode.util.Robot;
 import org.firstinspires.ftc.teamcode.util.RobotActions;
 
-@Autonomous(name = "ShootAndStrafeShortLeave")
+@Autonomous(name = "SHORTShootAndStrafeLeave")
 public class ShootAndStrafeShortLeave extends LinearOpMode {
     private Robot robot;
     private RobotActions actions;
@@ -22,7 +22,7 @@ public class ShootAndStrafeShortLeave extends LinearOpMode {
         waitForStart();
         Actions.runBlocking(
                 robot.drive.actionBuilder(startPose)
-                        .lineToX(-35)
+                        .lineToX(-40)
                         .build()
         );
         Actions.runBlocking( new ParallelAction(
