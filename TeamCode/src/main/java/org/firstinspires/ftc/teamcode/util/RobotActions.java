@@ -34,10 +34,10 @@ public class RobotActions {
                     robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
                     robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 } else {
-                    bottomDisPow = 2050;
-                    topDisPow = 1050;
-                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
-                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
+                    //bottomDisPow = 2100;
+                    //topDisPow = 1100;
+                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), robot.longTopRPM));
+                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), robot.longBottomRPM));
                 }
             }
             if (topDisPow!=0 && bottomDisPow!=0 && topDisPow<robot.outtake.getTopRPM() && bottomDisPow<robot.outtake.getBottomRPM()){

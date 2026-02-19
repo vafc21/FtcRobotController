@@ -90,10 +90,10 @@ public class MainTeleOpMode extends LinearOpMode {
                         robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
                         robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
                     } else {
-                        double bottomDisPow = 2000;
-                        double topDisPow = 1100;
-                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
-                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
+                        //double bottomDisPow = 2100;
+                        //double topDisPow = 1200;
+                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.longTopRPM, robot.outtake.getTopRPM()));
+                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.longBottomRPM, robot.outtake.getBottomRPM()));
                     }
                         double tx = robot.vision.getLatestTxDegreees();
                         if (tx != -1) {

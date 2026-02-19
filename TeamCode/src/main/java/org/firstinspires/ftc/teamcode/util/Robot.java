@@ -27,6 +27,8 @@ public class Robot {
     // Bottom RPM should more for backspin
     public final double rpmMinBottom = 1850;
     public final double rpmMaxBottom = 2500;
+    public final double longBottomRPM = 2100;
+    public final double longTopRPM = 1100;
     public PIDController OuttakePID = new PIDController(outtakekp);
     public PIDController RotatePID = new PIDController(rotatekp);
     //private PIDController StrafePID = new PIDController(strafekp);
