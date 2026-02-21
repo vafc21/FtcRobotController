@@ -41,14 +41,14 @@ public class ShootAndStrafeShortLeave extends LinearOpMode {
             Actions.runBlocking(
                     robot.drive.actionBuilder(startPose)
                             .turn(-145*((Math.PI)/180))
-                            .lineToX(21)
+                            .lineToX(23)
                             .build()
             );
         } else if (robot.color.equals("red")) {
             Actions.runBlocking(
                     robot.drive.actionBuilder(startPose)
                             .turn(145*((Math.PI)/180))
-                            .lineToX(21)
+                            .lineToX(23)
                             .build()
             );
         }

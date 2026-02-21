@@ -31,14 +31,14 @@ public class ShootAndStrafeLeave extends LinearOpMode  {
             Actions.runBlocking(
                     robot.drive.actionBuilder(startPose)
                             //.lineToX(5)
-                            .turn(20*((Math.PI)/180))
+                            .turn(22*((Math.PI)/180))
                             .build()
             );
         } else if (robot.color.equals("red")) {
             Actions.runBlocking(
                     robot.drive.actionBuilder(startPose)
                             //.lineToX(5)
-                            .turn(-20*((Math.PI)/180))
+                            .turn(-22*((Math.PI)/180))
                             .build()
             );
         }

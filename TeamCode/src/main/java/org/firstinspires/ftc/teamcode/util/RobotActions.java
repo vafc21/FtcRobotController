@@ -13,17 +13,23 @@ public class RobotActions {
     private boolean readyToShoot;
     private boolean stopAuto;
     private Double handoffStartMs = null;
+    private boolean handoffToggle;
 
     public RobotActions(Robot robot) {
         this.robot = robot;
-        robot.OuttakePID.setkP(-robot.outtakekp);
+        //robot.OuttakePID.setkP(-robot.outtakekp);
         this.readyToShoot = false;
         this.stopAuto = false;
+        this.handoffToggle = false;
     }
     public class Shoot implements Action {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            if (stopAuto){
+                robot.outtake.stopMotors();
+                return false;
+            }
             double area = robot.vision.getLatestTa();
             double bottomDisPow=0;
             double topDisPow=0;
@@ -34,19 +40,17 @@ public class RobotActions {
                     robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
                     robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 } else {
-                    //bottomDisPow = 2100;
-                    //topDisPow = 1100;
-                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), robot.longTopRPM));
-                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), robot.longBottomRPM));
+                    bottomDisPow = robot.longBottomRPM;
+                    topDisPow = robot.longTopRPM;
+                    robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(), topDisPow));
+                    robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(), bottomDisPow));
                 }
             }
-            if (topDisPow!=0 && bottomDisPow!=0 && topDisPow<robot.outtake.getTopRPM() && bottomDisPow<robot.outtake.getBottomRPM()){
+            if ((topDisPow!=0 && bottomDisPow!=0) && (topDisPow<robot.outtake.getTopRPM() && bottomDisPow<robot.outtake.getBottomRPM())){
                 readyToShoot = true;
                 //return false;
             }
-            if (stopAuto){
-                return false;
-            }
+
             return true;
 
         }
@@ -73,6 +77,7 @@ public class RobotActions {
 
         @Override
         public boolean run(@NonNull TelemetryPacket telemetryPacket) {
+            //double delay = 4000;
             if (!readyToShoot) {
                 return true;
             }
@@ -84,6 +89,14 @@ public class RobotActions {
                 stopAuto = true;
                 handoffStartMs = null;
                 return false;
+            } else if ((robot.runtime.milliseconds() - handoffStartMs)%1000==0) {
+                if (handoffToggle){
+                    robot.handoff.handoff();
+                    handoffToggle=false;
+                } else {
+                    robot.handoff.stopMotors();
+                    handoffToggle=true;
+                }
             }
             //readyToShoot = false;
             return true;

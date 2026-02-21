@@ -63,20 +63,11 @@ public class MainTeleOpMode extends LinearOpMode {
             double turn = gamepad1.left_stick_x;
             double drive  =  gamepad1.left_stick_y;
             double rotate = gamepad1.right_stick_x * rotateSpeed;
+            double bottomDisPow=0;
+            double topDisPow=0;
 
 
-            if (gamepad1.a) {
-                robot.handoff.store();
-                robot.intake.intake();
-            } else if (gamepad1.x) {
-                robot.handoff.handoff();
-                robot.intake.outtake();
-            } else {
-                //if (!gamepad1.right_bumper) {
-                robot.handoff.stopMotors();
-                robot.intake.stopMotor();
-                //}
-            }
+
 
 
             //intake.takeInToggle(handoff.toggleReturn(gamepad1.a));
@@ -85,15 +76,15 @@ public class MainTeleOpMode extends LinearOpMode {
                 if (gamepad1.right_bumper && (id==20 || id==24)){
                     double area = robot.vision.getLatestTa();
                     if(area>0.0041) {
-                        double bottomDisPow = mapAreaToRpmBottom(area);
-                        double topDisPow = mapAreaToRpmTop(area);
-                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(topDisPow, robot.outtake.getTopRPM()));
-                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(bottomDisPow, robot.outtake.getBottomRPM()));
+                        bottomDisPow = mapAreaToRpmBottom(area);
+                        topDisPow = mapAreaToRpmTop(area);
+                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(),topDisPow));
+                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(),bottomDisPow));
                     } else {
-                        //double bottomDisPow = 2100;
-                        //double topDisPow = 1200;
-                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.longTopRPM, robot.outtake.getTopRPM()));
-                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.longBottomRPM, robot.outtake.getBottomRPM()));
+                        bottomDisPow = robot.longBottomRPM;
+                        topDisPow = robot.longTopRPM;
+                        robot.outtake.runTopMotor(robot.OuttakePID.calculate(robot.outtake.getTopRPM(),topDisPow));
+                        robot.outtake.runBottomMotor(robot.OuttakePID.calculate(robot.outtake.getBottomRPM(),bottomDisPow));
                     }
                         double tx = robot.vision.getLatestTxDegreees();
                         if (tx != -1) {
@@ -114,6 +105,21 @@ public class MainTeleOpMode extends LinearOpMode {
                 }
             } else {
                 robot.outtake.stopMotors();
+            }
+            if (gamepad1.a) {
+                robot.handoff.store();
+                robot.intake.intake();
+            } else if (gamepad1.b && (bottomDisPow<=robot.outtake.getBottomRPM() && topDisPow<=robot.outtake.getTopRPM())) {
+                robot.handoff.handoff();
+                robot.intake.outtake();
+            } else if (gamepad1.x) {
+                robot.handoff.handoff();
+                robot.intake.outtake();
+            } else {
+                //if (!gamepad1.right_bumper) {
+                robot.handoff.stopMotors();
+                robot.intake.stopMotor();
+                //}
             }
 
 

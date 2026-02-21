@@ -18,17 +18,17 @@ public class Robot {
     public final Handoff handoff;
     public final Vision vision;
     public ElapsedTime runtime = new ElapsedTime();
-    public final double outtakekp = -0.01;
+    public final double outtakekp = 0.013;
     private final double rotatekp = 0.05;
     private final double strafekp = 0.02;
     // Top RPM should less for backspin
-    public final double rpmMinTop = 1100;
-    public final double rpmMaxTop = 2500;
+    public final double rpmMinTop = 1000;
+    public final double rpmMaxTop = 2000;
     // Bottom RPM should more for backspin
-    public final double rpmMinBottom = 1850;
+    public final double rpmMinBottom = 2200;
     public final double rpmMaxBottom = 2500;
-    public final double longBottomRPM = 2100;
-    public final double longTopRPM = 1100;
+    public final double longBottomRPM = 2250;
+    public final double longTopRPM = 1220;
     public PIDController OuttakePID = new PIDController(outtakekp);
     public PIDController RotatePID = new PIDController(rotatekp);
     //private PIDController StrafePID = new PIDController(strafekp);
